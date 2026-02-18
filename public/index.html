@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     
     <style>
+        /* --- UI TIDAK DIUBAH SAMA SEKALI --- */
         :root {
             --wa-teal: #00A884;
             --wa-dark: #111B21;
@@ -371,14 +372,16 @@
             label.innerText = `Hasil pencarian: "${query}"`;
 
             try {
-                // Fetch ke Backend Sendiri (/api/search) bukan langsung ke API luar
+                // Fetch ke Backend Sendiri
                 const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
                 const data = await response.json();
 
                 loader.style.display = 'none';
 
-                if (data.status && data.data && data.data.length > 0) {
-                    renderResults(data.data);
+                // PERBAIKAN DI SINI:
+                // API mengembalikan array grup di dalam 'result', bukan 'data'
+                if (data.status && data.result && data.result.length > 0) {
+                    renderResults(data.result);
                 } else {
                     showEmpty("Tidak ditemukan grup untuk kata kunci tersebut.");
                 }
@@ -393,13 +396,15 @@
         function renderResults(groups) {
             let html = '';
             groups.forEach(group => {
+                // PERBAIKAN DI SINI:
+                // Menggunakan 'group.name' bukan 'group.nama' sesuai JSON
                 html += `
                 <div class="group-card" onclick="window.open('${group.link}', '_blank')">
                     <div class="group-icon">
                         <i class="ri-group-line"></i>
                     </div>
                     <div class="group-info">
-                        <div class="group-name">${group.nama}</div>
+                        <div class="group-name">${group.name}</div>
                         <div class="group-link" style="color: var(--wa-teal); font-size: 0.75rem;">Ketuk untuk bergabung</div>
                     </div>
                     <a href="${group.link}" target="_blank" class="join-btn">GABUNG</a>
